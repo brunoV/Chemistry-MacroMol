@@ -1,11 +1,12 @@
 package Chemistry::MacroMol;
-use 5.006001;
+
+$VERSION = '0.06';
+# $Id: MacroMol.pm,v 1.6 2004/07/03 19:19:44 itubert Exp $
+
+use 5.006;
 use strict;
 use warnings;
-use base qw(Chemistry::Mol Exporter);
-
-our $VERSION = '0.05';
-our @EXPORT_OK = ();
+use base qw(Chemistry::Mol);
 
 =head1 NAME
 
@@ -15,9 +16,9 @@ Chemistry::MacroMol - Perl module for macromolecules
 
     use Chemistry::MacroMol;
 
-    my $mol = Chemistry::MacroMol->new(name => 'my molecule');
-    $mol->add_domain($domain); # see Chemistry::Domain for details
-    @domains = $mol->domains;
+    my $mol = Chemistry::MacroMol->new(name => 'my big molecule');
+    $mol->new_domain(name => "ASP"); # see Chemistry::Domain for details
+    my @domains = $mol->domains;
 
 =head1 DESCRIPTION
 
@@ -69,20 +70,26 @@ sub add_domain {
     $_[-1];
 }
 
+=item $mol->domain_class
+
+Returns the domain class that a macromolecule class expects to use by default.
+Chemistry::MacroMol objects return "Chemistry::Domain", but subclasses will
+likely override this method.
+
+=cut
+
+sub domain_class { "Chemistry::Domain" }
 
 =item $mol->new_domain(name => value, ...)
 
-Shorthand for $mol->add_domain(Chemistry::Domain->new(name => value, ...));
-It has the limitation that it doesn't let you create a subclass of 
-Chemistry::Domain.
+Shorthand for $mol->add_domain($mol->domain_class->new(parent => $mol, name => value, ...));
 
 =cut
 
 sub new_domain {
     my $self = shift;
-    $self->add_domain(Chemistry::Domain->new(@_));
+    $self->add_domain(Chemistry::Domain->new(parent => $self, @_));
 }
-
 
 =item $mol->domains($n1, ...)
 
@@ -106,6 +113,10 @@ sub domains {
 
 =back
 
+=head1 VERSION
+
+0.06
+
 =head1 SEE ALSO
 
 L<Chemistry::Domain>, L<Chemistry::Mol>
@@ -116,7 +127,7 @@ Ivan Tubert, E<lt>itub@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Ivan Tubert
+Copyright 2004 by Ivan Tubert
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

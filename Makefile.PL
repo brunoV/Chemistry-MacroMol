@@ -1,9 +1,11 @@
-use 5.006001;
+use 5.006;
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
+
 WriteMakefile(
     'NAME'		=> 'Chemistry::MacroMol',
-    'VERSION_FROM'	=> 'MacroMol.pm', # finds $VERSION
-    'PREREQ_PM'		=> {"Chemistry::Mol" => 0.05 },
+    'VERSION_FROM'	=> 'MacroMol.pm', 
+    'PREREQ_PM'		=> {qw(
+        Chemistry::Mol      0.24 
+        Scalar::Util        0
+    )},
 );

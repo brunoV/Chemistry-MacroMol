@@ -1,10 +1,15 @@
 package Chemistry::Domain;
-use 5.006001;
+
+$VERSION = '0.06';
+# $Id: Domain.pm,v 1.6 2004/07/03 19:19:44 itubert Exp $
+
+
+use 5.006;
 use strict;
 use warnings;
-use base qw(Chemistry::Mol Exporter);
+use base qw(Chemistry::Mol);
 use Carp;
-our $VERSION = '0.05';
+use Scalar::Util 'weaken';
 
 =head1 NAME
 
@@ -19,18 +24,10 @@ Chemistry::Domain - Class for domains in macromolecules
 
 A domain is a substructure of a larger molecule. It is typically used to
 represent aminoacid residues within a protein, or bases within a nucleic acid,
-but you can use it for any arbitrary substructure such as functional groups
+but you could use it for any arbitrary substructure such as functional groups
 and rings. A domain has all the properties of a molecule, plus a "parent". The
 parent is the larger molecule that contains the domain. In other words, the
 Chemistry::Domain class inherits from Chemistry::Mol.
-
-=cut
-
-our @EXPORT_OK = ();
-
-Chemistry::Obj::accessor('parent');
-# should add checking to ensure that parent is a Mol
-
 
 =head1 METHODS
 
@@ -56,6 +53,23 @@ sub new {
 }
 
 
+=item $domain->parent
+
+Returns the parent of the domain.
+
+=cut
+
+sub parent {
+    my $self = shift;
+    if (@_) {
+        $self->{parent} = shift;
+        weaken($self->{parent});
+        return $self;
+    } else {
+        return $self->{parent};
+    }
+}
+
 =item $domain->add_atom($atom, ...)
 
 Add one or more Atom objects to the domain. Returns the last atom added. It 
@@ -65,7 +79,7 @@ also automatically adds the atoms to the atom table of the parent molecule.
 
 sub add_atom {
     my $self = shift;
-    $self->SUPER::add_atom(@_); # add atom to self (domain)
+    $self->add_atom_np(@_); # add atom to self (domain)
     $self->parent->add_atom(@_); # add atom to parent (macromol)
 }
 
@@ -79,7 +93,7 @@ also automatically adds the bond to the bond table of the parent molecule.
 
 sub add_bond {
     my $self = shift;
-    $self->SUPER::add_bond(@_); # add bond to self (domain)
+    $self->add_bond_np(@_); # add bond to self (domain)
     $self->parent->add_bond(@_); # add bond to parent (macromol)
 }
 
@@ -87,6 +101,10 @@ sub add_bond {
 1;
 
 =back
+
+=head1 VERSION
+
+0.06
 
 =head1 SEE ALSO
 
@@ -99,7 +117,7 @@ Ivan Tubert, E<lt>itub@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Ivan Tubert
+Copyright 2004 by Ivan Tubert
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
